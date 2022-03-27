@@ -62,4 +62,11 @@ public class CatalogDao {
         dynamoDbMapper.save(book);
         return book;
     }
+
+    public boolean validateBookExists(String bookId) {
+        if (getLatestVersionOfBook(bookId) == null) {
+            throw new BookNotFoundException(String.format("No book found for id: %s", bookId));
+        }
+        return true;
+    }
 }
