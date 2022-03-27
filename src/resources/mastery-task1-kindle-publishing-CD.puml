@@ -1,1 +1,153 @@
 PARTICIPANTS: use this file for creating the class diagram in mastery task 01
+class Packaging {
+    -material: Material
+    +getMass(): BigDecimal
+    +canFitItem(Item): boolean
+}
+@startuml
+class GetBookActivity {
+    -recommendationServiceClient: RecommendationsServiceClient
+    -catalogDao: CatalogDao
+     +GetBookActivity(CatalogDao, RecommendationsServiceClient): this
+    +execute(GetBookRequest): GetBookResponse
+}
+
+class GetPublishingStatusActivity {
+    #GetPublishingStatusActivity(): this
+    +execute(GetPublishingStatusRequest): GetPublishingStatusResponse
+}
+
+class RemoveBookFromCatalogActivity {
+    #RemoveBookFromCatalogActivity(): this
+    +execute(RemoveBookFromCatalogRequest): RemoveBookFromCatalogResponse
+}
+
+class RemoveBookFromCatalogActivity {
+    #RemoveBookFromCatalogActivity(): this
+    +execute(RemoveBookFromCatalogRequest): RemoveBookFromCatalogResponse
+}
+
+class SubmitBookForPublishingActivity {
+    -publishingStatusDao: PublishingStatusDao
+    +SubmitBookForPublishingActivity(PublishingStatusDao): this
+    +execute(SubmitBookForPublishingRequest): SubmitBookForPublishingResponse
+}
+
+class RecommendationsServiceClient {
+    -recommendationsService: RecommendationsService
+    +RecommendationsServiceClient(RecommendationsService): this
+    +getBookRecommendations(BookGenre): List<BookRecommendation>
+
+}
+
+class Controller {
+    -{static}component: ApplicationComponent
+    +<<GetMapping>>getBook(<<PathVariable>>String): ResponseEntity<?>
+    +<<DeleteMapping>>removeBook(<<PathVariable>>String): ResponseEntity<?>
+    +submitBookForPublishing(<<Valid>><<RequestBody>>Book): ResponseEntity<?>
+}
+
+class CatalogDao {
+    -dynamoDbMapper: DynamoDBMapper
+    +<<Inject>>CatalogDao(DynamoDBMapper): this
+    +getBookFromCatalog(String): CatalogItemVersion
+    -getLatestVersionOfBook(String): CatalogItemVersion
+
+}
+
+class PublishingStatusDao {
+    -dynamoDbMapper: DynamoDBMapper
+    -{static}ADDITIONAL_NOTES_PREFIX: String
+    +<<Inject>>PublishingStatusDao(DynamoDBMapper): this
+    +setPublishingStatus(String, PublishingRecordStatus, String): PublishingStatusItem
+    +setPublishingStatus(String, PublishingRecordStatus, String, String): PublishingStatusItem
+}
+
+class CatalogItemVersion {
+    @DynamoDBHashKey bookId : String
+    @DynamoDBRangeKey version : int
+    -inactive: boolean
+    -title: String
+    -author: String
+    -text: String
+    -genre: BookGenre
+    +<<DynamoDBHashKey>>getBookId(): String
+    +setBookId(String): void
+    +<<DynamoDBRangeKey>>getVersion(): int
+    +setVersion(int): void
+    +<<DynamoDBAttribute>>getTitle(): String
+    +setTitle(String): void
+    +<<DynamoDBAttribute>>getAuthor(): String
+    +setAuthor(String): void
+    +<<DynamoDBAttribute>>getText(): String
+    +setText(String): void
+    +<<DynamoDBTypeConvertedEnum>><<DynamoDBAttribute>>getGenre(): BookGenre
+    +setGenre(boolean): void
+    +<<DynamoDBAttribute>>isInactive(): boolean
+    +setInactive(boolean): void
+}
+
+class PublishingStatusItem {
+    @DynamoDBHashKey publishingRecordId: String
+    @DynamoDBRangeKey status: PublishingRecordStatus
+    -statusMessage: String
+    -bookId: String
+    +<<DynamoDBHashKey>>getPublishingRecordId(): String
+    +setPublishingRecordId(String): void
+    +<<DynamoDBTypeConvertedEnum>><<DynamoDBRangeKey>>getStatus(): PublishingRecordStatus
+    +setStatus(PublishingRecordStatus): void
+    +<<DynamoDBAttribute>>getStatusMessage(): String
+    +setStatusMessage(String): void
+    +<<DynamoDBAttribute>>getBookId(): String
+    +setBookId(String): void
+}
+
+class Throwable {
+    -serialVersionUID: long
+}
+
+class Exception {
+    -serialVersionUID: long
+    +Exception(): this
+    +Exception(String): this
+    +Exception(String, Throwable): this
+    +Exception(Throwable): this
+    +Exception(String, Throwable, boolean, boolean): this
+}
+
+class RuntimeException {
+    -serialVersionUID: long
+    +RuntimeException(): this
+    +RuntimeException(String): this
+    +RuntimeException(String, Throwable): this
+    +RuntimeException(Throwable): this
+    +RuntimeException(String, Throwable, boolean, boolean): this
+}
+
+class BookNotFoundException {
+    -{static}serialVersionUID: long
+    +BookNotFoundException(String): this
+    +BookNotFoundException(String, Throwable): this
+}
+
+GetBookActivity *-- RecommendationsServiceClient
+GetBookActivity *-- CatalogDao
+SubmitBookForPublishingActivity *-- PublishingStatusDao
+
+RecommendationsServiceClient --* RecommendationsService
+
+Controller --* ApplicationComponent
+
+CatalogDao --* DynamoDBMapper
+CatalogDao --|> CatalogItemVersion
+CatalogDao --|> BookNotFoundException
+PublishingStatusDao --* DynamoDBMapper
+PublishingStatusDao --|> PublishingStatusItem
+
+Exception --|> Throwable
+RuntimeException --|> Exception
+BookNotFoundException --|> RuntimeException
+PublishingStatusNotFoundException --|> RuntimeException
+
+
+@enduml
