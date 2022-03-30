@@ -1,18 +1,20 @@
 package com.amazon.ata.kindlepublishingservice.publishing;
 
-import java.util.LinkedList;
+import javax.inject.Inject;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class BookPublishRequestManager {
     private Queue<BookPublishRequest> bookPublishRequestQueue;
 
+    @Inject
     public BookPublishRequestManager() {
-        this.bookPublishRequestQueue = new LinkedList<>();
+        this.bookPublishRequestQueue = new ConcurrentLinkedQueue<>();
     }
 
     public Queue<BookPublishRequest> getBookPublishRequestQueue() {
-        Queue<BookPublishRequest> copyQueue = new LinkedList<>(this.bookPublishRequestQueue);
+        Queue<BookPublishRequest> copyQueue = new ConcurrentLinkedQueue<>(this.bookPublishRequestQueue);
         return copyQueue;
     }
 

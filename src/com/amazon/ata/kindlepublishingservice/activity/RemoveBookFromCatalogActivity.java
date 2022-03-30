@@ -15,7 +15,7 @@ public class RemoveBookFromCatalogActivity {
     }
 
     public RemoveBookFromCatalogResponse execute(RemoveBookFromCatalogRequest removeBookFromCatalogRequest) {
-        catalogDao.RemoveBookFromCatalog(removeBookFromCatalogRequest.getBookId());
+        catalogDao.removeBookFromCatalog(removeBookFromCatalogRequest.getBookId());
         return new RemoveBookFromCatalogResponse();
     }
 }
