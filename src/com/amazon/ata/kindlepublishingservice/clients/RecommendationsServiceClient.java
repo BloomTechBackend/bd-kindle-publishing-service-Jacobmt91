@@ -1,9 +1,9 @@
 package com.amazon.ata.kindlepublishingservice.clients;
 
+import com.amazon.ata.kindlepublishingservice.dao.CachingRecommendationDao;
 import com.amazon.ata.recommendationsservice.types.BookGenre;
 // import com.amazon.ata.kindlepublishingservice.metrics.MetricsConstants;
 //import com.amazon.ata.kindlepublishingservice.metrics.MetricsPublisher;
-import com.amazon.ata.recommendationsservice.RecommendationsService;
 import com.amazon.ata.recommendationsservice.types.BookRecommendation;
 
 import java.util.List;
@@ -15,7 +15,7 @@ import javax.inject.Inject;
  */
 public class RecommendationsServiceClient {
 
-    private final RecommendationsService recommendationsService;
+    private final CachingRecommendationDao cachingRecommendationDao;
 
     /**
      * Instantiates a new RecommendationsServiceClient.
@@ -23,8 +23,8 @@ public class RecommendationsServiceClient {
      * @param service RecommendationsService to call.
      */
     @Inject
-    public RecommendationsServiceClient(RecommendationsService service) {
-        this.recommendationsService = service;
+    public RecommendationsServiceClient(CachingRecommendationDao service) {
+        this.cachingRecommendationDao = service;
     }
 
     /**
@@ -36,7 +36,7 @@ public class RecommendationsServiceClient {
     public List<BookRecommendation> getBookRecommendations(BookGenre genre) {
         final double startTime = System.currentTimeMillis();
 
-        List<BookRecommendation> recommendations = recommendationsService.getBookRecommendations(
+        List<BookRecommendation> recommendations = cachingRecommendationDao.getRecommendations(
             BookGenre.valueOf(genre.name()));
 
         final double endTime = System.currentTimeMillis() - startTime;
